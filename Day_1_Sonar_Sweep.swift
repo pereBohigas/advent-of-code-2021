@@ -2051,3 +2051,15 @@ let input: [Int] = [
 
 // from: https://adventofcode.com/2021/day/1/input
 
+// Solution:
+
+let numberOfIncrements: Int = zip(Array(input), Array(input + [0]).dropFirst())
+  .filter {
+    // increase = true
+    // decrease = false
+    return $0 < $1
+  }
+  .count
+
+print(numberOfIncrements)
+
