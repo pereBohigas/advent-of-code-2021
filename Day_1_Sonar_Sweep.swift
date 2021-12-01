@@ -2051,9 +2051,9 @@ let input: [Int] = [
 
 // from: https://adventofcode.com/2021/day/1/input
 
-// Solution:
+// Solution Part 1:
 
-let numberOfIncrements: Int = zip(input.dropLast(), input.dropFirst())
+let numberOfOneMeasurementIncrements: Int = zip(input.dropLast(), input.dropFirst())
   .filter {
     // increase = true
     // decrease = false
@@ -2061,7 +2061,7 @@ let numberOfIncrements: Int = zip(input.dropLast(), input.dropFirst())
   }
   .count
 
-print(numberOfIncrements)
+print(numberOfOneMeasurementIncrements)
 
 // --- Part Two ---
 //
@@ -2099,4 +2099,21 @@ print(numberOfIncrements)
 // Consider sums of a three-measurement sliding window. How many sums are larger than the previous sum?
 //
 // from: https://adventofcode.com/2021/day/1#part2
+
+// Solution Part 2:
+
+let threeMeasuramentsSum: [Int] = zip(zip(input.dropLast(2), input.dropFirst().dropLast()), input.dropFirst(2))
+  .map {
+    $0.0 + $0.1 + $1
+  }
+
+let numberOfThreeMeasurementsIncrements: Int = zip(threeMeasuramentsSum.dropLast(), threeMeasuramentsSum.dropFirst())
+  .filter {
+    // increase = true
+    // decrease = false
+    return $0 < $1
+  }
+  .count
+
+print(numberOfThreeMeasurementsIncrements)
 
