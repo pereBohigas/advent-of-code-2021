@@ -2053,7 +2053,7 @@ let input: [Int] = [
 
 // Solution:
 
-let numberOfIncrements: Int = zip(Array(input), Array(input + [0]).dropFirst())
+let numberOfIncrements: Int = zip(input.dropLast(), input.dropFirst())
   .filter {
     // increase = true
     // decrease = false
