@@ -1,5 +1,2 @@
-*
-!.gitignore
-!*/
-!**Day*.kt
-!**input*.txt
+.DS_Store
+
