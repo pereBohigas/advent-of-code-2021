@@ -118,9 +118,7 @@ object Day01 {
         printChanges(inputPairs)
 
         /* The above stuff was only for printing, now do the real calc */
-        val result = inputPairs.count { (prevLine, thisLine) ->
-            thisLine.isGreaterThan(prevLine)
-        }
+        val result = partOne()
 
         println()
         println("How many measurements are larger than the previous measurement?")
@@ -151,9 +149,7 @@ object Day01 {
         printChanges(windowPairs)
 
         /* Now do the real calc */
-        val result = windowPairs.count { (prevLine, thisLine) ->
-            thisLine.isGreaterThan(prevLine)
-        }
+        val result = partTwo()
 
         println()
         println("Consider sums of a three-measurement sliding window. How many sums are larger than the previous sum?")
@@ -176,19 +172,19 @@ object Day01 {
     }
 
     /* calculating part */
-    fun partOne(): Int =
+    fun partOne(): Int? =
         inputList?.let { it
             .zipWithNext()
             .count { (prevLine, thisLine) -> thisLine.isGreaterThan(prevLine) }
-        } ?: -1
+        }
 
-    fun partTwo(): Int =
+    fun partTwo(): Int? =
         inputList?.let { it
             .windowed(3)
             .map(List<Int>::sum)
             .zipWithNext()
             .count { (prevLine, thisLine) -> thisLine.isGreaterThan(prevLine) }
-        } ?: -1
+        }
 
 }
 
@@ -198,9 +194,7 @@ fun Int.isGreaterThan(other: Int): Boolean = this > other
 
 fun main() {
     Day01.partOnePrint()
-    Day01.partOne()
     println("---")
     println()
     Day01.partTwoPrint()
-    Day01.partTwo()
 }
