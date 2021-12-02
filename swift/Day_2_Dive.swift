@@ -1043,3 +1043,31 @@ let input: [String] = [
 
 // from: https://adventofcode.com/2021/day/2/input
 
+// Solution Part 1:
+
+import Foundation
+
+let horizontalMovementsSum: Int = input
+  .map { $0.components(separatedBy: " ") }
+  .filter { $0[0] == "forward" }
+  .compactMap { Int($0[1]) }
+  .reduce(0, +)
+
+let depthMovementsSum = input
+  .map { $0.components(separatedBy: " ") }
+  .filter { ["down", "up"].contains($0[0]) }
+  .map { deepMovement -> Int in
+    let value = Int(deepMovement[1])!
+    if deepMovement[0] == "down" {
+      return value
+    } else {
+      return 0 - value
+    }
+  }
+  .reduce(0, +)
+
+print("Sum of horizontal movements: \(horizontalMovementsSum)")
+print("Sum of depth movements: \(depthMovementsSum)")
+
+print("Answer: \(horizontalMovementsSum * depthMovementsSum)")
+
