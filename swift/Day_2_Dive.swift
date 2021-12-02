@@ -1047,29 +1047,29 @@ let input: [String] = [
 
 import Foundation
 
-let horizontalMovementsSum: Int = input
-  .map { $0.components(separatedBy: " ") }
-  .filter { $0[0] == "forward" }
-  .compactMap { Int($0[1]) }
-  .reduce(0, +)
+let horizontalPosition1: Int = input
+   .map { $0.components(separatedBy: " ") }
+   .filter { $0[0] == "forward" }
+   .compactMap { Int($0[1]) }
+   .reduce(0, +)
 
-let depthMovementsSum = input
-  .map { $0.components(separatedBy: " ") }
-  .filter { ["down", "up"].contains($0[0]) }
-  .map { deepMovement -> Int in
-    let value = Int(deepMovement[1])!
-    if deepMovement[0] == "down" {
-      return value
-    } else {
-      return 0 - value
-    }
-  }
-  .reduce(0, +)
+let depth1 = input
+   .map { $0.components(separatedBy: " ") }
+   .filter { ["down", "up"].contains($0[0]) }
+   .map { deepMovement -> Int in
+     let value = Int(deepMovement[1])!
+     if deepMovement[0] == "down" {
+       return value
+     } else {
+       return 0 - value
+     }
+   }
+   .reduce(0, +)
 
-print("Sum of horizontal movements: \(horizontalMovementsSum)")
-print("Sum of depth movements: \(depthMovementsSum)")
+print("Horizontal position (part 1): \(horizontalPosition1)")
+print("Depth (part1): \(depth1)")
 
-print("Answer: \(horizontalMovementsSum * depthMovementsSum)")
+print("Answer (part1): \(horizontalPosition1 * depth1)")
 
 // --- Part Two ---
 //
@@ -1099,4 +1099,44 @@ print("Answer: \(horizontalMovementsSum * depthMovementsSum)")
 // Using this new interpretation of the commands, calculate the horizontal position and depth you would have after following the planned course. What do you get if you multiply your final horizontal position by your final depth?
 //
 // from: https://adventofcode.com/2021/day/2#part2
+
+// Solution Part Two:
+
+import Foundation
+
+let commands: [(command: String, value: Int)] = input
+  .map { input -> (command: String, value: Int) in
+    let commandWithValue = input.components(separatedBy: " ")
+    return (commandWithValue[0], Int(commandWithValue[1])!)
+  }
+
+let horizontalPosition2: Int = commands
+  .filter { $0.command == "forward" }
+  .map { $0.value }
+  .reduce(0, +)
+
+let aim: [Int] = commands
+  .map {
+    if $0.command == "up" {
+      return 0 - $0.value
+    } else if $0.command == "down" {
+      return $0.value
+    }
+    return 0
+  }
+
+let depth2: Int = commands.enumerated()
+  .map { (index,element) -> Int in
+    if element.command == "forward" {
+      let currentAim = aim[0...index].reduce(0, +)
+      return currentAim * element.value
+    }
+    return 0
+  }
+  .reduce(0, +)
+
+print("Horizontal position (part 2): \(horizontalPosition2)")
+print("Depth (part 2): \(depth2)")
+
+print("Answer (part 2): \(depth2 * horizontalPosition2)")
 
