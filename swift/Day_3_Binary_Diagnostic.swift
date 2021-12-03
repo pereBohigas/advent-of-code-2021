@@ -45,7 +45,7 @@ let diagnosticReport = input.split(separator: "\n")
 
 // from: https://adventofcode.com/2021/day/3/input
 
-// Solution part 1:
+// Solution Part One:
 
 let binaryNumberLength = diagnosticReport[0].count
 
@@ -58,24 +58,24 @@ let bitFrequencies: [[String: Int]] = (0..<binaryNumberLength)
   }
 
 let gammaRate: String = bitFrequencies
-  .map { $0.max() { $0.value < $1.value } }
-  .compactMap { $0!.key }
+  .compactMap { $0.max() { $0.value < $1.value } }
+  .map { $0!.key }
   .joined()
 
-print("Gamma rate (part 1): \(gammaRate)")
+print("Gamma rate (part one): \(gammaRate)")
 
 let epsilonRate: String = bitFrequencies
-  .map { $0.min { $0.value < $1.value } }
-  .compactMap { $0!.key }
+  .compactMap { $0.min { $0.value < $1.value } }
+  .map { $0!.key }
   .joined()
 
-print("Epsilon rate (part 1): \(epsilonRate)")
+print("Epsilon rate (part one): \(epsilonRate)")
 
 let powerConsumption: Int = [gammaRate, epsilonRate]
   .map { Int($0, radix: 2)! }
   .reduce(1, *)
 
-print("Answer (part 1) - power consumption: \(powerConsumption)")
+print("Answer (part one) - power consumption: \(powerConsumption)")
 
 // --- Part Two ---
 //

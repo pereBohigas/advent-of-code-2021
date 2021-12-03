@@ -48,12 +48,14 @@ let commands = input.split(separator: "\n")
 
 // from: https://adventofcode.com/2021/day/2/input
 
-// Solution Part 1:
+// Solution Part One:
 
 let horizontalPosition1: Int = commands
    .filter { $0.command == "forward" }
    .compactMap { Int($0.value) }
    .reduce(0, +)
+
+print("Horizontal position (part one): \(horizontalPosition1)")
 
 let depth1 = commands
    .filter { ["down", "up"].contains($0.command) }
@@ -66,10 +68,9 @@ let depth1 = commands
    }
    .reduce(0, +)
 
-print("Horizontal position (part 1): \(horizontalPosition1)")
-print("Depth (part1): \(depth1)")
+print("Depth (part one): \(depth1)")
 
-print("Answer (part1): \(horizontalPosition1 * depth1)")
+print("Answer (part one): \(horizontalPosition1 * depth1)")
 
 // --- Part Two ---
 //
@@ -107,6 +108,8 @@ let horizontalPosition2: Int = commands
   .map { $0.value }
   .reduce(0, +)
 
+print("Horizontal position (part two): \(horizontalPosition2)")
+
 let aim: [Int] = commands
   .map {
     if $0.command == "up" {
@@ -127,8 +130,7 @@ let depth2: Int = commands.enumerated()
   }
   .reduce(0, +)
 
-print("Horizontal position (part 2): \(horizontalPosition2)")
-print("Depth (part 2): \(depth2)")
+print("Depth (part two): \(depth2)")
 
-print("Answer (part 2): \(depth2 * horizontalPosition2)")
+print("Answer (part two): \(depth2 * horizontalPosition2)")
 

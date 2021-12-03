@@ -56,7 +56,7 @@ let measurements = input.split(separator: "\n")
 
 // from: https://adventofcode.com/2021/day/1/input
 
-// Solution Part 1:
+// Solution Part One:
 
 let numberOfOneMeasurementIncrements: Int = zip(measurements.dropLast(), measurements.dropFirst())
   .filter {
@@ -66,7 +66,7 @@ let numberOfOneMeasurementIncrements: Int = zip(measurements.dropLast(), measure
   }
   .count
 
-print("Answer (part 1): \(numberOfOneMeasurementIncrements)")
+print("Answer (part one): \(numberOfOneMeasurementIncrements)")
 
 // --- Part Two ---
 //
@@ -120,5 +120,5 @@ let numberOfThreeMeasurementsIncrements: Int = zip(threeMeasuramentsSum.dropLast
   }
   .count
 
-print("Answer (part 2): \(numberOfThreeMeasurementsIncrements)")
+print("Answer (part two): \(numberOfThreeMeasurementsIncrements)")
 
