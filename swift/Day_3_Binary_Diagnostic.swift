@@ -42,7 +42,38 @@ import Foundation
 let input = try! String(contentsOfFile: "Day_3_Binary_Diagnostic_input.txt")
 
 let diagnosticReport = input.split(separator: "\n")
-  .map { "0b" + $0 }
 
 // from: https://adventofcode.com/2021/day/3/input
+
+// Solution part 1:
+
+let binaryNumberLength = diagnosticReport[0].count
+
+let bitFrequencies: [[String: Int]] = (0..<binaryNumberLength)
+  .map { digitIndex in
+    let digitArray = diagnosticReport
+      .map { (String(Array($0)[digitIndex]), 1) }
+
+    return Dictionary(digitArray, uniquingKeysWith: +)
+  }
+
+let gammaRate: String = bitFrequencies
+  .map { $0.max() { $0.value < $1.value } }
+  .compactMap { $0!.key }
+  .joined()
+
+print("Gamma rate (part 1): \(gammaRate)")
+
+let epsilonRate: String = bitFrequencies
+  .map { $0.min { $0.value < $1.value } }
+  .compactMap { $0!.key }
+  .joined()
+
+print("Epsilon rate (part 1): \(epsilonRate)")
+
+let powerConsumption: Int = [gammaRate, epsilonRate]
+  .map { Int($0, radix: 2)! }
+  .reduce(1, *)
+
+print("Answer (part 1) - power consumption: \(powerConsumption)")
 
