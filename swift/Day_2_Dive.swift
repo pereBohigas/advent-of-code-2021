@@ -43,7 +43,7 @@ import Foundation
 let input = try! String(contentsOfFile: "Day_2_Dive_input.txt")
 
 let commands = input.split(separator: "\n")
-   .map { $0.split(separator: " ") }
+   .map { $0.split(separator: " ").map(String.init) }
    .map { (command: $0[0], value: Int($0[1])!) }
 
 // from: https://adventofcode.com/2021/day/2/input
