@@ -41,41 +41,41 @@ import Foundation
 
 let input = try! String(contentsOfFile: "Day_3_Binary_Diagnostic_input.txt")
 
-let diagnosticReport = input.split(separator: "\n")
+let diagnosticReport = input.split(separator: "\n").map(String.init)
 
 // from: https://adventofcode.com/2021/day/3/input
 
 // Solution Part One:
 
-let binaryNumberLength = diagnosticReport[0].count
+let binaryNumberIndices1 = diagnosticReport[0].indices
 
-let bitFrequencies: [[String: Int]] = (0..<binaryNumberLength)
+let bitFrequencies1: [[Character: Int]] = binaryNumberIndices1
   .map { digitIndex in
     let digitArray = diagnosticReport
-      .map { (String(Array($0)[digitIndex]), 1) }
+      .map { ($0[digitIndex], 1) }
 
     return Dictionary(digitArray, uniquingKeysWith: +)
   }
 
-let gammaRate: String = bitFrequencies
+let gammaRate: String = bitFrequencies1
   .compactMap { $0.max() { $0.value < $1.value } }
-  .map { $0!.key }
+  .compactMap { String($0.key) }
   .joined()
 
 print("Gamma rate (part one): \(gammaRate)")
 
-let epsilonRate: String = bitFrequencies
+let epsilonRate: String = bitFrequencies1
   .compactMap { $0.min { $0.value < $1.value } }
-  .map { $0!.key }
+  .compactMap { String($0.key) }
   .joined()
 
 print("Epsilon rate (part one): \(epsilonRate)")
 
 let powerConsumption: Int = [gammaRate, epsilonRate]
-  .map { Int($0, radix: 2)! }
+  .compactMap { Int($0, radix: 2) }
   .reduce(1, *)
 
-print("Answer (part one) - power consumption: \(powerConsumption)")
+print("Answer (part one) - Power consumption: \(powerConsumption)")
 
 // --- Part Two ---
 //
