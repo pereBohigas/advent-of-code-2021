@@ -80,8 +80,64 @@ let boards: [[[Int]]] = {
     return boards
   }()
 
-print(numbersToDraw)
-print(boards)
-
 // from: https://adventofcode.com/2021/day/4/input
+
+// Solution Part One:
+
+var winningNumber: Int? = nil
+
+var winningBoard: [[Int?]] = [[Int?]]()
+
+var boardsToDraw: [[[Int?]]] = boards
+
+outer: for numberToDraw in numbersToDraw {
+  for (boardIndex, board) in boardsToDraw.enumerated() {
+    for (rowIndex, row) in board.enumerated() {
+      for (numberIndex, number) in row.enumerated() {
+        if number == numberToDraw {
+          boardsToDraw[boardIndex][rowIndex][numberIndex] = nil
+        }
+      }
+    }
+  }
+
+  for board in boardsToDraw {
+    for row in board {
+      if row.allSatisfy({ $0 == nil }) {
+        winningNumber = numberToDraw
+        winningBoard = board
+        break outer
+      }
+
+      for (numberIndex, number) in row.enumerated() {
+        if number == nil {
+          let isColumnDrawn = board.allSatisfy { row in
+            row[numberIndex] == nil
+          }
+
+          if isColumnDrawn {
+            winningNumber = numberToDraw
+            winningBoard = board
+            break outer
+          }
+        }
+      }
+    }
+  }
+}
+
+print("Winning number (part one): \(winningNumber!)")
+
+print("Winning board (part one): \(winningBoard)")
+
+let winningBoardScore = winningBoard.reduce([], +)
+  .reduce(0, { (x: Int, y: Int?) in
+    if let y = y {
+      return x + y
+    } else {
+      return x
+    }
+  })
+
+print("Answer (part one) - Final score: \(winningBoardScore * winningNumber!)")
 
