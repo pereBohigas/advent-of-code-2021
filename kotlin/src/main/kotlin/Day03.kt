@@ -77,118 +77,130 @@ object Day03 {
     /* read input from file */
     private val inputString: String? = javaClass.getResource(inputTxt)?.readText()
 
-    /*
-        convert the input string to a list if fixed-length binary digits representing each line,
-        omitting black lines and lines that don't contain the fixed length of numbers.
-     */
-    private val binaryNumbers: List<FixedLengthBinaryLiteral>? = inputString?.lines()
-        ?.mapNotNull { when {
-            it.isBlank() -> null
-            else -> when (it.length) {
-                fixedNumberLength -> FixedLengthBinaryLiteral.from(it)
-                else -> null
-            }
-        }}
+    /* convert the input string to a BinaryTable */
+    private val binaryTable: BinaryTable? = inputString?.let {
+        BinaryTable.from(inputString, fixedNumberLength)
+    }
 
     fun partOne(): Int? {
 
-        binaryNumbers ?: return null
+        binaryTable ?: return null
 
-        val gammaRate = FixedLengthBinaryLiteral.from(
-            fixedNumberLength, binaryNumbers, List<BinaryDigit>::getMostCommon
-        )
-        val epsilonRate = FixedLengthBinaryLiteral.from(
-            fixedNumberLength, binaryNumbers, List<BinaryDigit>::getLeastCommon
-        )
+        val gammaRate: BinaryTable.Row = binaryTable.select(BinaryTable.Column::getMostCommon)
+        val epsilonRate: BinaryTable.Row = binaryTable.select(BinaryTable.Column::getLeastCommon)
 
-        val gammaDecimal: Int = gammaRate.getDecimal()
-        val epsilonDecimal: Int = epsilonRate.getDecimal()
-
-        return gammaDecimal * epsilonDecimal
+        return gammaRate.getDecimal() * epsilonRate.getDecimal()
 
     }
 
     fun partTwo(): Int? {
 
-        binaryNumbers ?: return null
+        binaryTable ?: return null
 
-        fun entireList(input: List<FixedLengthBinaryLiteral>, index: Int): List<BinaryDigit> =
-            input.map { it.get(index) }
+        val oxygenGeneratorRating = binaryTable.filterMoving(BinaryTable.Column::getMostCommon)
+        val c02ScrubberRating = binaryTable.filterMoving(BinaryTable.Column::getLeastCommon)
 
-        fun hasTheValueWhichIsMostCommon(entireList: List<BinaryDigit>, index: Int): (digit: FixedLengthBinaryLiteral) -> Boolean = {
-            it.get(index) == entireList.getMostCommon()
+        return oxygenGeneratorRating.getTopRow().getDecimal() * c02ScrubberRating.getTopRow().getDecimal()
+
+    }
+
+}
+
+fun String.hasLength(targetLength: Int): Boolean = length == targetLength
+
+class BinaryTable(private val rows: List<Row>, private val wordLength: Int) {
+
+    val columns = List(wordLength) { index: Int -> Column.from(rows, index) }
+
+    private fun getColumn(index: Int): Column = columns[index]
+
+    private fun getLength(): Int = rows.size
+
+    class Row(private val bits: List<BinaryDigit>) {
+
+        fun get(index: Int): BinaryDigit = bits[index]
+
+        companion object {
+            fun from(input: String, wordLength: Int): Row = when {
+                input.hasLength(wordLength) -> Row(input.map(BinaryDigit::fromChar))
+                else -> throw IllegalArgumentException("Input $input doesn't have $wordLength bits!")
+            }
         }
 
-        fun lookAtIndex(input: List<FixedLengthBinaryLiteral>, index: Int): (FixedLengthBinaryLiteral) -> Boolean =
-            hasTheValueWhichIsMostCommon(entireList(input, index), index)
+        /* helper to convert a binary literal to a decimal */
+        private val convertToDecimal = { index: Int, decimal: Int, digit: BinaryDigit ->
+            decimal + digit.value * 2.0.pow(index.toDouble()).toInt()
+        }
 
-        binaryNumbers
-            .filter(lookAtIndex(binaryNumbers, 0))
-            .filter(lookAtIndex(binaryNumbers, 1))
-            .filter(lookAtIndex(binaryNumbers, 2))
-            .filter(lookAtIndex(binaryNumbers, 3))
-            .filter(lookAtIndex(binaryNumbers, 4))
-            .filter(lookAtIndex(binaryNumbers, 5))
-            // ...
-            // This must be simplified #TODO
+        fun getDecimal(): Int = bits.reversed().foldIndexed(0, convertToDecimal)
 
-        /* define an operation that will be  */
+        fun hasSelectedBitAtIndex(index: Int, selectedBit: BinaryDigit): Boolean = get(index) == selectedBit
 
-        return null
     }
 
-}
+    class Column(private val bits: List<BinaryDigit>) {
 
-fun List<BinaryDigit>.getMostCommon(): BinaryDigit = when {
-    count(BinaryDigit::isOne) >= count(BinaryDigit::isZero) -> BinaryDigit.ONE
-    else -> BinaryDigit.ZERO
-}
+        fun getMostCommon(): BinaryDigit = when {
+            bits.count(BinaryDigit::isOne) >= bits.count(BinaryDigit::isZero) -> BinaryDigit.ONE
+            else -> BinaryDigit.ZERO
+        }
 
-fun List<BinaryDigit>.getLeastCommon(): BinaryDigit = when {
-    count(BinaryDigit::isOne) < count(BinaryDigit::isZero) -> BinaryDigit.ONE
-    else -> BinaryDigit.ZERO
-}
+        fun getLeastCommon(): BinaryDigit = when {
+            bits.count(BinaryDigit::isOne) < bits.count(BinaryDigit::isZero) -> BinaryDigit.ONE
+            else -> BinaryDigit.ZERO
+        }
 
-class FixedLengthBinaryLiteral(private val list: List<BinaryDigit>) {
+        companion object {
 
-    fun get(index: Int): BinaryDigit = list[index]
+            fun from(rows: List<Row>, index: Int): Column {
+                return Column(rows.map { row -> row.get(index) })
+            }
 
-    /* helper to convert a binary literal to a decimal */
-    private val convertToDecimal = { index: Int, decimal: Int, digit: BinaryDigit ->
-        decimal + digit.value * 2.0.pow(index.toDouble()).toInt()
+        }
+
     }
 
-    fun getDecimal(): Int = list.reversed().foldIndexed(0, convertToDecimal)
+    /*
+     Return one row, where each bit is calculated by the [selector].
+
+     The selector is a function:
+     fn(Column) -> BinaryDigit
+
+     It will select one BinaryDigit from a Column
+     */
+    fun select(selector: (Column) -> BinaryDigit): Row = Row(
+        List(wordLength) { index: Int ->
+            getColumn(index).run(selector)
+        }
+    )
+
+    /* Filter the table, selecting all rows that have the matching bit from [selector] at a given [index] */
+    private fun filter(index: Int, selector: (Column) -> BinaryDigit): BinaryTable = when {
+        getLength() == 1 -> this
+        else -> BinaryTable(
+            rows.filter { row ->
+                row.hasSelectedBitAtIndex(index, selector(getColumn(index)))
+            },
+            wordLength
+        )
+    }
+
+    /* Apply a filter with pre-set [selector] to every column, moving from left to right */
+    fun filterMoving(selector: (Column) -> BinaryDigit): BinaryTable =
+        columns.foldIndexed(this) { columnIndex: Int, filteredTable: BinaryTable, _: Column ->
+            filteredTable.filter(columnIndex, selector)
+        }
+
+    fun getTopRow(): Row = rows[0]
 
     companion object {
 
-        /*
-            function that helps to build lists, such that:
-
-            - if there's an [input] list of BinaryLiterals ("10101", "11111", "10101" etc.)
-            - then create new lists, consisting of the i-th bit of each BinaryLiteral
-              e.g. for i=1: ["1", "1", "1",  etc.], for i=2: ["0", "1", "0", ...] etc.
-            - from these lists, apply [selector] to return only one value per list
-
-            Now, create a new list that, for every [index], contains the [selector] for i=index
-         */
-        private fun listBuilder(
-            input: List<FixedLengthBinaryLiteral>,
-            selector: (List<BinaryDigit>) -> BinaryDigit
-        ) = { index: Int ->
-            input
-                .map { it.get(index) }
-                .run(selector)
-        }
-
-        fun from(input: String): FixedLengthBinaryLiteral = FixedLengthBinaryLiteral(
-            input.map(BinaryDigit::fromChar)
-        )
-
-        fun from(length: Int,
-                 input: List<FixedLengthBinaryLiteral>,
-                 selector: (List<BinaryDigit>) -> BinaryDigit) = FixedLengthBinaryLiteral(
-            List(length, listBuilder(input, selector))
+        /* Create a BinaryTable object from an inputString, containing fixed-length binary literals. */
+        fun from(inputString: String, wordLength: Int): BinaryTable = BinaryTable(
+            inputString.lines().map { line: String ->
+                Row.from(line, wordLength)
+            },
+            wordLength
         )
 
     }
@@ -201,12 +213,10 @@ enum class BinaryDigit(val value: Int) {
     fun isOne(): Boolean = this == ONE
 
     companion object {
-        fun fromChar(char: Char): BinaryDigit {
-            return when (char) {
-                '0' -> ZERO
-                '1' -> ONE
-                else -> throw IllegalArgumentException("$char is not a binary digit")
-            }
+        fun fromChar(char: Char): BinaryDigit = when (char) {
+            '0' -> ZERO
+            '1' -> ONE
+            else -> throw IllegalArgumentException("$char is not a binary digit")
         }
     }
 }

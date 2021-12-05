@@ -172,13 +172,13 @@ object Day01 {
     }
 
     /* calculating part */
-    fun partOne(): Int? =
+    private fun partOne(): Int? =
         inputList?.let { it
             .zipWithNext()
             .count { (prevLine, thisLine) -> thisLine.isGreaterThan(prevLine) }
         }
 
-    fun partTwo(): Int? =
+    private fun partTwo(): Int? =
         inputList?.let { it
             .windowed(3)
             .map(List<Int>::sum)
