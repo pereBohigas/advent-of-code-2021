@@ -141,3 +141,90 @@ let winningBoardScore = winningBoard.reduce([], +)
 
 print("Answer (part one) - Final score: \(winningBoardScore * winningNumber!)")
 
+// --- Part Two ---
+//
+// On the other hand, it might be wise to try a different strategy: let the giant squid win.
+//
+// You aren't sure how many bingo boards a giant squid could play at once, so rather than waste time counting its arms, the safe thing to do is to figure out which board will win last and choose that one. That way, no matter which boards it picks, it will win for sure.
+//
+// In the above example, the second board is the last to win, which happens after 13 is eventually called and its middle column is completely marked. If you were to keep playing until this point, the second board would have a sum of unmarked numbers equal to 148 for a final score of 148 * 13 = 1924.
+//
+// Figure out which board will win last. Once it wins, what would its final score be?
+//
+// from: https://adventofcode.com/2021/day/4#part2
+
+// Solution Part Two:
+
+var lastNumber: Int? = nil
+
+var lastBoard: [[Int?]] = [[Int?]]()
+
+var boardsToDraw2: [(board: [[Int?]], isDraw: Bool)] = boards.map { ($0, false) }
+
+outer: for numberToDraw in numbersToDraw {
+  for (boardIndex, board) in boardsToDraw2.enumerated() {
+    for (rowIndex, row) in board.board.enumerated() {
+      for (numberIndex, number) in row.enumerated() {
+        if number == numberToDraw {
+          boardsToDraw2[boardIndex].board[rowIndex][numberIndex] = nil
+        }
+      }
+    }
+  }
+
+  for (boardIndex, board) in boardsToDraw2.enumerated() {
+    for row in board.board {
+      let isRowDraw = row.allSatisfy({ $0 == nil })
+
+      if isRowDraw {
+        let isLastBoard = boardsToDraw2.allSatisfy({ $0.isDraw})
+
+        if isLastBoard {
+          lastNumber = numberToDraw
+          lastBoard = board.board
+          break outer
+        }
+
+        boardsToDraw2[boardIndex].isDraw = true
+        continue
+      }
+
+      for (numberIndex, number) in row.enumerated() {
+        if number == nil {
+          let isColumnDrawn = board.board.allSatisfy { row in
+            row[numberIndex] == nil
+          }
+
+          if isColumnDrawn {
+            let isLastBoard = boardsToDraw2.allSatisfy({ $0.isDraw})
+
+            if isLastBoard {
+              lastNumber = numberToDraw
+              lastBoard = board.board
+              break outer
+            }
+
+            boardsToDraw2[boardIndex].isDraw = true
+            continue
+          }
+        }
+      }
+    }
+  }
+}
+
+print("Last number (part two): \(lastNumber!)")
+
+print("Last board (part two): \(lastBoard)")
+
+let lastBoardScore = lastBoard.reduce([], +)
+  .reduce(0, { (x: Int, y: Int?) in
+    if let y = y {
+      return x + y
+    } else {
+      return x
+    }
+  })
+
+print("Answer (part two) - Final score: \(lastBoardScore * lastNumber!)")
+
