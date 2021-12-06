@@ -94,12 +94,7 @@ object Day01 {
     private val inputString: String? = javaClass.getResource(inputTxt)?.readText()
 
     /* convert the input string to a list if integers representing each line, omitting black lines */
-    private val inputList: List<Int>? = inputString?.lines()
-        ?.mapNotNull { when {
-            it.isBlank() -> null
-            else -> it.toInt()
-        }
-    }
+    private val inputList: List<Int>? = inputString?.lines()?.filterNotBlank()?.map(String::toInt)
 
     /* printing part */
     fun partOnePrint() {

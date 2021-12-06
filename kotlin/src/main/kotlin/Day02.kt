@@ -66,33 +66,23 @@ object Day02 {
     private val inputString: String? = javaClass.getResource(inputTxt)?.readText()
 
     /* convert the input string to a list if direction Strings representing each line, omitting black lines */
-    private val directionStrings: List<DirectionString>? = inputString?.lines()
-        ?.mapNotNull { when {
-            it.isBlank() -> null
-            else -> it.toDirectionString()
-        }}
-
-    private fun String.toDirectionString(): DirectionString? = when {
-        matches(Direction.FORWARD.getRegex()) -> DirectionString(this, Direction.FORWARD)
-        matches(Direction.DOWN.getRegex()) -> DirectionString(this, Direction.DOWN)
-        matches(Direction.UP.getRegex()) -> DirectionString(this, Direction.UP)
-        else -> null
-    }
+    private val directionStrings: List<DirectionString>? =
+        inputString?.lines()?.filterNotBlank()?.map(DirectionString::from)
 
     fun partOne(): Int? {
 
         directionStrings ?: return null
 
         val horizontal = directionStrings
-            .filter { it.direction == Direction.FORWARD }
+            .filter(DirectionString::isForward)
             .sumOf { it.value }
 
         val downSum = directionStrings
-            .filter { it.direction == Direction.DOWN }
+            .filter(DirectionString::isDown)
             .sumOf { it.value }
 
         val upSum = directionStrings
-            .filter { it.direction == Direction.UP }
+            .filter(DirectionString::isUp)
             .sumOf { it.value }
 
         val depth = downSum - upSum
@@ -167,6 +157,21 @@ class DirectionString(input: String, val direction: Direction) {
     operator fun component2(): Int = value
 
     override fun toString(): String = "${component1()} ${component2()}"
+
+    fun isForward(): Boolean = direction == Direction.FORWARD
+    fun isDown(): Boolean = direction == Direction.DOWN
+    fun isUp(): Boolean = direction == Direction.UP
+
+    companion object {
+
+        fun from(input: String): DirectionString = when {
+            input.matches(Direction.FORWARD.getRegex()) -> DirectionString(input, Direction.FORWARD)
+            input.matches(Direction.DOWN.getRegex()) -> DirectionString(input, Direction.DOWN)
+            input.matches(Direction.UP.getRegex()) -> DirectionString(input, Direction.UP)
+            else -> throw IllegalArgumentException("$input is not a valid direction string")
+        }
+
+    }
 
 }
 

@@ -129,8 +129,6 @@ object Day04 {
 
 }
 
-fun List<String>.filterNotBlank(): List<String> = filterNot(String::isBlank)
-
 /*
     Immutable Board List.
     For each operation that alters one of the Boards,
