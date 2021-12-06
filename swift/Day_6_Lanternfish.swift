@@ -59,11 +59,38 @@ import Foundation
 
 let input = try! String(contentsOfFile: "Day_6_Lanternfish_input.txt")
 
-let lanternfishGestationTime: Int = 6
+let lanternfishGestationTime: Int = 6 // 7 days ending on 0
 
 let newLanternfishGestationTime: Int = lanternfishGestationTime + 2
 
-let lanternfishes: [Int] = input.split(separator: ",").compactMap { Int($0) }
+let initialLanternfishStatus: [Int] = input.replacingOccurrences(of: "\n", with: "")
+  .split(separator: ",")
+  .compactMap { Int($0) } + [3]
 
 // from: https://adventofcode.com/2021/day/6/input
+
+// Solution 1:
+
+typealias Laternfish = (timer: Int, isNew: Bool)
+
+var lanternfishGrowth : [Laternfish] = initialLanternfishStatus.map { ($0, false) }
+
+print("Initial state: \(lanternfishGrowth.compactMap { String($0.timer) } .joined(separator: ","))")
+
+(1...80).forEach { day -> Void in
+  let newLaternfishQuantity = lanternfishGrowth.filter { $0.timer == 0 }.count
+
+  lanternfishGrowth = lanternfishGrowth.map {
+    $0.timer == 0 ? (lanternfishGestationTime, false) : ($0.timer - 1, $0.isNew)
+  }
+
+  let newLanternfish = Array(repeating: newLanternfishGestationTime, count: newLaternfishQuantity)
+    .map { ($0, true) }
+
+  lanternfishGrowth.append(contentsOf: newLanternfish)
+
+  print("After \(day) days: \(lanternfishGrowth.compactMap { String($0.timer) } .joined(separator: ","))")
+}
+
+print("Answer (part one) - Quantity lanternfish after 80 days: \(lanternfishGrowth.count)")
 
