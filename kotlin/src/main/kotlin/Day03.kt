@@ -110,7 +110,7 @@ fun String.hasLength(targetLength: Int): Boolean = length == targetLength
 
 class BinaryTable(private val rows: List<Row>, private val wordLength: Int) {
 
-    val columns = List(wordLength) { index: Int -> Column.from(rows, index) }
+    private val columns = List(wordLength) { index: Int -> Column.from(rows, index) }
 
     private fun getColumn(index: Int): Column = columns[index]
 
@@ -152,9 +152,7 @@ class BinaryTable(private val rows: List<Row>, private val wordLength: Int) {
 
         companion object {
 
-            fun from(rows: List<Row>, index: Int): Column {
-                return Column(rows.map { row -> row.get(index) })
-            }
+            fun from(rows: List<Row>, index: Int): Column = Column(rows.map { row -> row.get(index) })
 
         }
 
@@ -168,11 +166,8 @@ class BinaryTable(private val rows: List<Row>, private val wordLength: Int) {
 
      It will select one BinaryDigit from a Column
      */
-    fun select(selector: (Column) -> BinaryDigit): Row = Row(
-        List(wordLength) { index: Int ->
-            getColumn(index).run(selector)
-        }
-    )
+    fun select(selector: (Column) -> BinaryDigit): Row =
+        Row(columns.map { it.run(selector) })
 
     /* Filter the table, selecting all rows that have the matching bit from [selector] at a given [index] */
     private fun filter(index: Int, selector: (Column) -> BinaryDigit): BinaryTable = when {
