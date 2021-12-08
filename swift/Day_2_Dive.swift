@@ -40,7 +40,9 @@
 
 import Foundation
 
-let input = try! String(contentsOfFile: "Day_2_Dive_input.txt")
+let inputFileName = #filePath.replacingOccurrences(of: ".swift", with: "_input.txt")
+
+let input = try! String(contentsOfFile: inputFileName)
 
 let commands = input.split(separator: "\n")
    .map { $0.split(separator: " ").map(String.init) }

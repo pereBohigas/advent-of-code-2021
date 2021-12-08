@@ -39,7 +39,9 @@
 
 import Foundation
 
-let input = try! String(contentsOfFile: "Day_3_Binary_Diagnostic_input.txt")
+let inputFileName = #filePath.replacingOccurrences(of: ".swift", with: "_input.txt")
+
+let input = try! String(contentsOfFile: inputFileName)
 
 let diagnosticReport = input.split(separator: "\n").map(String.init)
 

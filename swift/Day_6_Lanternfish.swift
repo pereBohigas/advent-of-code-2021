@@ -57,7 +57,9 @@
 
 import Foundation
 
-let input = try! String(contentsOfFile: "Day_6_Lanternfish_input.txt")
+let inputFileName = #filePath.replacingOccurrences(of: ".swift", with: "_input.txt")
+
+let input = try! String(contentsOfFile: inputFileName)
 
 let lanternfishGestationTime: Int = 6 // 7 days ending on 0
 

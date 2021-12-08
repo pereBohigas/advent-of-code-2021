@@ -49,7 +49,9 @@
 
 import Foundation
 
-let input = try! String(contentsOfFile: "Day_1_Sonar_Sweep_input.txt")
+let inputFileName = #filePath.replacingOccurrences(of: ".swift", with: "_input.txt")
+
+let input = try! String(contentsOfFile: inputFileName)
 
 let measurements = input.split(separator: "\n")
   .compactMap { Int($0) }

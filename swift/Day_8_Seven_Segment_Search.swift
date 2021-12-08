@@ -76,7 +76,9 @@
 
 import Foundation
 
-let input = try! String(contentsOfFile: "Day_8_Seven_Segment_Search_input.txt")
+let inputFileName = #filePath.replacingOccurrences(of: ".swift", with: "_input.txt")
+
+let input = try! String(contentsOfFile: inputFileName)
 
 typealias Entry = (signalLines: [String], outputValue: [String])
 

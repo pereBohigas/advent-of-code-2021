@@ -38,7 +38,9 @@
 
 import Foundation
 
-let input = try! String(contentsOfFile: "Day_7_The_Treachery_of_Whales_input.txt")
+let inputFileName = #filePath.replacingOccurrences(of: ".swift", with: "_input.txt")
+
+let input = try! String(contentsOfFile: inputFileName)
 
 let initialPositions: [Int] = input.replacingOccurrences(of: "\n", with: "")
   .split(separator: ",")

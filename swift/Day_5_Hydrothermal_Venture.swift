@@ -47,9 +47,10 @@
 
 import Foundation
 
-let input = try! String(contentsOfFile: "Day_5_Hydrothermal_Venture_input.txt")
+let inputFileName = #filePath.replacingOccurrences(of: ".swift", with: "_input.txt")
 
 typealias lineVent = (x1: Int, y1: Int, x2: Int, y2: Int)
+let input = try! String(contentsOfFile: inputFileName)
 
 let lineVents: [lineVent] = input.split(separator: "\n").map(String.init)
   .map {
