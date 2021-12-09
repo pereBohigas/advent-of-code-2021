@@ -85,7 +85,7 @@ object Day05 {
     private val inputString: String? = javaClass.getResource(inputTxt)?.readText()
 
     /* convert the input to a list of Lines */
-    private val lines: List<Line>? = inputString?.lines()?.filterNotBlank()?.map { Line.from(it) }
+    private val lines: List<Line>? = inputString?.lines()?.filterNotBlank()?.map(Line::from)
 
     fun partOne(): Int? {
 
@@ -192,10 +192,12 @@ class Line(private val p1: Point, private val p2: Point) {
 
     companion object {
 
-        fun from(input: String): Line {
-            val (p1, p2) = input.split("->").map { Point.from(it.trim()) }
-            return Line(p1, p2)
-        }
+        fun from(input: String): Line = from(input.split("->")
+            .map { Point.from(it.trim()) }
+            .zipWithNext()
+            .single())
+
+        private fun from(pair: Pair<Point, Point>): Line = Line(pair.first, pair.second)
 
     }
 
