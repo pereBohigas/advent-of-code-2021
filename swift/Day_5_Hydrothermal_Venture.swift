@@ -49,10 +49,11 @@ import Foundation
 
 let inputFileName = #filePath.replacingOccurrences(of: ".swift", with: "_input.txt")
 
-typealias lineVent = (x1: Int, y1: Int, x2: Int, y2: Int)
 let input = try! String(contentsOfFile: inputFileName)
 
-let lineVents: [lineVent] = input.split(separator: "\n").map(String.init)
+typealias LineVent = (x1: Int, y1: Int, x2: Int, y2: Int)
+
+let lineVents: [LineVent] = input.split(separator: "\n").map(String.init)
   .map {
     $0.components(separatedBy: " -> ")
       .flatMap { $0.components(separatedBy: ",") }
@@ -61,4 +62,66 @@ let lineVents: [lineVent] = input.split(separator: "\n").map(String.init)
   .map { ($0[0], $0[1], $0[2], $0[3]) }
 
 // from: https://adventofcode.com/2021/day/5/input
+
+// Test data:
+
+let testData = [
+    "0,9 -> 5,9",
+    "8,0 -> 0,8",
+    "9,4 -> 3,4",
+    "2,2 -> 2,1",
+    "7,0 -> 7,4",
+    "6,4 -> 2,0",
+    "0,9 -> 2,9",
+    "3,4 -> 1,4",
+    "0,0 -> 8,8",
+    "5,5 -> 8,2"
+  ].map {
+    $0.components(separatedBy: " -> ")
+      .flatMap { $0.components(separatedBy: ",") }
+      .compactMap { Int($0) }
+  }
+  .map { points -> LineVent in
+    (points[0], points[1], points[2], points[3])
+  }
+
+// Solution Part One:
+
+let isLineHorizontalOrVertical = { (line: LineVent) -> Bool in
+    line.x1 == line.x2 || line.y1 == line.y2
+  }
+
+let horizontalAndVerticalLines = lineVents.filter {
+    isLineHorizontalOrVertical($0)
+  }
+
+struct Point: Hashable {
+  let x: Int
+  let y: Int
+}
+
+let points = horizontalAndVerticalLines.flatMap { line -> [Point] in
+    var linePoints = [Point]()
+
+    if line.x1 == line.x2 {
+      (Swift.min(line.y1, line.y2)...Swift.max(line.y1, line.y2)).forEach {
+          linePoints.append(Point(x: line.x1, y: $0))
+        }
+    } else if line.y1 == line.y2 {
+      (Swift.min(line.x1, line.x2)...Swift.max(line.x1, line.x2)).forEach {
+          linePoints.append(Point(x: $0, y: line.y1))
+        }
+    }
+
+    return linePoints
+  }
+
+let overlappingPoints = Dictionary(
+    points.map { ($0, 1) },
+    uniquingKeysWith: +
+  )
+  .filter { $0.value > 1 }
+  .keys
+
+print("Answer (part one) - Overlapping points: \(overlappingPoints.count)")
 
