@@ -1,4 +1,4 @@
-//--- Day 2: Dive! ---
+// --- Day 2: Dive! ---
 //
 // Now, you need to figure out how to pilot this thing.
 //
@@ -33,7 +33,7 @@
 // Calculate the horizontal position and depth you would have after following the planned course. What do you get if you multiply your final horizontal position by your final depth?
 //
 // To begin, get your puzzle input.
-
+//
 // from: https://adventofcode.com/2021/day/2
 
 // Input:
@@ -83,8 +83,8 @@ print("Answer (part one): \(horizontalPosition1 * depth1)")
 //   - down X increases your aim by X units.
 //   - up X decreases your aim by X units.
 //   - forward X does two things:
-//       - It increases your horizontal position by X units.
-//       - It increases your depth by your aim multiplied by X.
+//     - It increases your horizontal position by X units.
+//     - It increases your depth by your aim multiplied by X.
 //
 // Again note that since you're on a submarine, down and up do the opposite of what you might expect: "down" means aiming in the positive direction.
 //
