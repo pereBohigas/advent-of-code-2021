@@ -67,11 +67,15 @@ let newLanternfishGestationTime: Int = lanternfishGestationTime + 2
 
 let initialLanternfishStatus: [Int] = input.replacingOccurrences(of: "\n", with: "")
   .split(separator: ",")
-  .compactMap { Int($0) } + [3]
+  .compactMap { Int($0) }
 
 // from: https://adventofcode.com/2021/day/6/input
 
-// Solution 1:
+let testData = [
+    3,4,3,1,2
+  ]
+
+// Solution Part One:
 
 typealias Laternfish = (timer: Int, isNew: Bool)
 
@@ -95,4 +99,57 @@ print("Initial state: \(lanternfishGrowth.compactMap { String($0.timer) } .joine
 }
 
 print("Answer (part one) - Quantity lanternfish after 80 days: \(lanternfishGrowth.count)")
+
+// --- Part Two ---
+//
+// Suppose the lanternfish live forever and have unlimited food and space. Would they take over the entire ocean?
+//
+// After 256 days in the example above, there would be a total of 26984457539 lanternfish!
+//
+// How many lanternfish would there be after 256 days?
+//
+// from: https://adventofcode.com/2021/day/6#part2
+
+// Solution Part Two:
+
+let groupLanternfishStatus = { (array: [Int]) -> [Int: Int] in
+  let extendedArray = array.map { ($0, 1) }
+
+  return Dictionary(extendedArray, uniquingKeysWith: +)
+}
+
+var lanternfishGrowthGrouped: [Int:Int] = groupLanternfishStatus(initialLanternfishStatus).merging(
+    Dictionary(uniqueKeysWithValues: (0...newLanternfishGestationTime).map { ($0, 0) } ),
+    uniquingKeysWith: +
+  )
+
+print("Initial state: \(lanternfishGrowthGrouped.sorted(by: <))")
+
+(1...256).forEach { day -> Void in
+  let newLanternfish = lanternfishGrowthGrouped[0]!
+
+  var currentStatus = Dictionary(uniqueKeysWithValues: (0...newLanternfishGestationTime).map { ($0, 0) } )
+
+  _ = lanternfishGrowthGrouped.map { (key: Int, value: Int) in
+    if key == 0 {
+      let current = currentStatus[6]!
+      currentStatus.updateValue(value + current, forKey: 6)
+      // print("key \(key) and value \(value) go to key \(6) and value \(value + current)")
+    } else {
+      let current = currentStatus[key-1]!
+      // print("key \(key) and value \(value) go to key \(key - 1) and value \(value + current)")
+      currentStatus.updateValue(value + current, forKey: key - 1)
+    }
+  }
+
+  currentStatus.updateValue(newLanternfish, forKey: newLanternfishGestationTime)
+
+  lanternfishGrowthGrouped = currentStatus
+
+  print("After \(day) days: \(currentStatus.sorted(by: <))")
+}
+
+let quantityOfLanternfish = lanternfishGrowthGrouped.values.reduce(0, +)
+
+print("Answer (part two) - Quantity lanternfish after 256 days: \(quantityOfLanternfish)")
 
