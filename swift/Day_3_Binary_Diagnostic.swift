@@ -45,13 +45,29 @@ let input = try! String(contentsOfFile: inputFileName)
 
 let diagnosticReport = input.split(separator: "\n").map(String.init)
 
+let binaryNumberIndices = diagnosticReport[0].indices
+
 // from: https://adventofcode.com/2021/day/3/input
+
+let testData = [
+    "00100",
+    "11110",
+    "10110",
+    "10111",
+    "10101",
+    "01111",
+    "00111",
+    "11100",
+    "10000",
+    "11001",
+    "00010",
+    "01010"
+  ]
 
 // Solution Part One:
 
-let binaryNumberIndices1 = diagnosticReport[0].indices
 
-let bitFrequencies1: [[Character: Int]] = binaryNumberIndices1
+let bitFrequencies: [[Character: Int]] = binaryNumberIndices
   .map { digitIndex in
     let digitArray = diagnosticReport
       .map { ($0[digitIndex], 1) }
@@ -59,16 +75,16 @@ let bitFrequencies1: [[Character: Int]] = binaryNumberIndices1
     return Dictionary(digitArray, uniquingKeysWith: +)
   }
 
-let gammaRate: String = bitFrequencies1
+let gammaRate: String = bitFrequencies
   .compactMap { $0.max() { $0.value < $1.value } }
-  .compactMap { String($0.key) }
+  .map { String($0.key) }
   .joined()
 
 print("Gamma rate (part one): \(gammaRate)")
 
-let epsilonRate: String = bitFrequencies1
+let epsilonRate: String = bitFrequencies
   .compactMap { $0.min { $0.value < $1.value } }
-  .compactMap { String($0.key) }
+  .map { String($0.key) }
   .joined()
 
 print("Epsilon rate (part one): \(epsilonRate)")
@@ -115,4 +131,74 @@ print("Answer (part one) - Power consumption: \(powerConsumption)")
 // Use the binary numbers in your diagnostic report to calculate the oxygen generator rating and CO2 scrubber rating, then multiply them together. What is the life support rating of the submarine? (Be sure to represent your answer in decimal, not binary.)
 //
 // from: https://adventofcode.com/2021/day/3#part2
+
+// Solution Part Two:
+
+let mostCommonBit = { (frequencies: [Character: Int]) -> Character in
+    frequencies.max() {
+        $0.value != $1.value ? $0.value < $1.value : $1.key == "1"
+    }!.key
+  }
+
+let leastCommonBit = { (frequencies: [Character: Int]) -> Character in
+    frequencies.min() {
+        $0.value != $1.value ? $0.value < $1.value : $0.key == "0"
+    }!.key
+  }
+
+var oxygenGeneratorRatingCandidates = diagnosticReport
+
+var positions = binaryNumberIndices
+
+while(oxygenGeneratorRatingCandidates.count > 1 && positions.count > 0) {
+  guard let position = positions.first else { continue }
+
+  let bitFrequenciesForPosition = oxygenGeneratorRatingCandidates.map {
+      ($0[position], 1)
+    }
+
+  let mostCommonBitForPosition = mostCommonBit(
+      Dictionary(bitFrequenciesForPosition, uniquingKeysWith: +)
+    )
+
+  oxygenGeneratorRatingCandidates = oxygenGeneratorRatingCandidates.filter {
+      $0[position] == mostCommonBitForPosition
+    }
+
+  positions = positions.dropFirst()
+}
+
+let oxygenGeneratorRating = Int(oxygenGeneratorRatingCandidates.first!, radix: 2)!
+
+print("Oxygen generator rating (part two): \(oxygenGeneratorRating)")
+
+var co2ScrubberRatingCandidates = diagnosticReport
+
+positions = binaryNumberIndices
+
+while(co2ScrubberRatingCandidates.count > 1 && positions.count > 0) {
+  guard let position = positions.first else { continue }
+
+  let bitFrequenciesForPosition = co2ScrubberRatingCandidates.map {
+      ($0[position], 1)
+    }
+
+  let leastCommonBitForPosition = leastCommonBit(
+      Dictionary(bitFrequenciesForPosition, uniquingKeysWith: +)
+    )
+
+  co2ScrubberRatingCandidates = co2ScrubberRatingCandidates.filter {
+      $0[position] == leastCommonBitForPosition
+    }
+
+  positions = positions.dropFirst()
+}
+
+let co2ScrubberRating = Int(co2ScrubberRatingCandidates.first!, radix: 2)!
+
+print("CO2 scrubber rating (part two): \(co2ScrubberRating)")
+
+let lifeSupportRating = oxygenGeneratorRating * co2ScrubberRating
+
+print("Answer (part two) - Life support rating: \(lifeSupportRating)")
 
