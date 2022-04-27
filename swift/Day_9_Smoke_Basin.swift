@@ -74,6 +74,10 @@ let lowPointsIndices2 = Array(zip(horizontalLowPointsIndices, verticalLowPointsI
   horizontalIndices.filter { verticalIndices.contains($0) }
 }
 
+// let lowPointsIndices = horizontalLowPointsIndices.enumerated().map { index, indicesLine in
+//   indicesLine.filter { verticalLowPointsIndices[index].contains($0) }
+// }
+
 let riskLevels = zip(areaPoints, lowPointsIndices2).map { pointsLine, indices in
   indices.map { pointsLine[$0] + 1 }.reduce(0, +)
 }
@@ -82,3 +86,4 @@ let sumOfRiskLevels = riskLevels.reduce(0, +)
 
 print("Sum of the risk levels of all low points in the heightmap (part one): \(sumOfRiskLevels)")
 
+// 562

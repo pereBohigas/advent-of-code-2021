@@ -66,7 +66,6 @@ let testData = [
 
 // Solution Part One:
 
-
 let bitFrequencies: [[Character: Int]] = binaryNumberIndices
   .map { digitIndex in
     let digitArray = diagnosticReport

@@ -53,8 +53,8 @@ let inputFileName = #filePath.replacingOccurrences(of: ".swift", with: "_input.t
 
 let input = try! String(contentsOfFile: inputFileName)
 
-let measurements = input.split(separator: "\n")
-  .compactMap { Int($0) }
+let measurements = input.split(separator: "\n").compactMap(String.init)
+  .compactMap(Int.init)
 
 // from: https://adventofcode.com/2021/day/1/input
 
